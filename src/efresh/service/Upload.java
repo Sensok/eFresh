@@ -1,13 +1,7 @@
 package efresh.service;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.DropboxAPI.Entry;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.session.AccessTokenPair;
-import com.dropbox.client2.session.AppKeyPair;
-import com.dropbox.client2.session.RequestTokenPair;
-import com.dropbox.client2.session.Session.AccessType;
-import com.dropbox.client2.session.WebAuthSession;
+import com.dropbox.core.*;
+import java.io.ByteArrayInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +26,7 @@ public class Upload
     *
     * @param mDBApi Dropbox api to use to upload files to dropbox
     */
-   public Upload(DropboxAPI mDBApi)
+   public Upload(DbxClient mClient)
    {
       mPathSep = System.getProperty("file.separator");
       InputStream is;
@@ -41,19 +35,19 @@ public class Upload
       String path = System.getProperty("user.home") + mPathSep +
          "efresh-tmp" + mPathSep + "Login.info";
 
-      File folder = new File(path);
-
-      try
-      {
-         is = new FileInputStream(folder);
-
-         mDBApi.putFileOverwrite(mPathSep +
-                                 folder.getName(), is, folder.length(),
-            null);
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
+      File folder = new File(path);      
+      
+      InputStream inputStream;
+       inputStream = new ByteArrayInputStream(path.getBytes());
+        try { 
+              DbxEntry.File uploadedFile = mClient.uploadFile("",
+              DbxWriteMode.force(), folder.length(), inputStream);
+              System.out.println("Uploaded: " + uploadedFile.toString());
+              inputStream.close();
+            }
+        
+         catch (Exception e) {
+             e.printStackTrace();
+          }
    }
 }

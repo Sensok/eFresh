@@ -1,24 +1,25 @@
 package efresh.desktop;
 
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
 import efresh.service.RSA;
 import efresh.service.StringSplit;
 import efresh.service.Upload;
 
 import efresh.system.Download;
-import efresh.system.DropBoxApi;
-import efresh.system.Info;
 import efresh.system.Starter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 import java.math.BigInteger;
 
-import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -84,7 +85,7 @@ public class Login
    /**
     * Instantiates the Info for the rest of the program to use
     */
-   public static DropBoxApi dropBox;
+   public static DbxClient dropBox;
 
    /**
     * This will launch the GUI
@@ -105,12 +106,13 @@ public class Login
    @Override
    public void start(Stage primaryStage)
    {
+      initDropbox();
       mStage = primaryStage;
       primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
          {
             public void handle(WindowEvent event)
             {
-               new Upload(dropBox.mDBApi);
+               new Upload(dropBox);
                event.consume();
 
                try
@@ -145,8 +147,7 @@ public class Login
 
       try
       {
-         dropBox = new DropBoxApi("t");
-         new Download(dropBox.mDBApi);
+         new Download(dropBox);
       }
       catch (Exception e)
       {
@@ -247,7 +248,13 @@ public class Login
 
                   if (loginOkay)
                   {
-                     new Main(userTextField.getText(), username);
+                      try {
+                          new Main(userTextField.getText(), username);
+                      } catch (DbxException ex) {
+                          Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                      } catch (IOException ex) {
+                          Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                      }
                   }
                }
 
@@ -279,4 +286,10 @@ public class Login
       primaryStage.setScene(scene);
       primaryStage.show();
    }
+
+    private void initDropbox() {
+        String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
+        DbxRequestConfig config = new DbxRequestConfig("MiniPierre", Locale.getDefault().toString());
+        dropBox = new DbxClient(config, accessToken);
+    }
 }

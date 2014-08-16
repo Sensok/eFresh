@@ -1,15 +1,19 @@
 package efresh.desktop;
 
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import static efresh.desktop.Login.dropBox;
 import efresh.service.Upload;
+import efresh.system.Download;
 
 import efresh.system.Starter;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.util.Locale;
 import javafx.application.Application;
 import javafx.application.Platform;
-
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -19,7 +23,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
 import javafx.stage.Stage;
 
 /**
@@ -143,19 +146,32 @@ public final class Main
     * The user name of the user
     */
    public static String username;
+     
+   /**
+    * DropBox API
+    */
+   public static DbxClient dropBox;
 
+    private void initDropbox() {
+        String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
+        DbxRequestConfig config = new DbxRequestConfig("MiniPierre", Locale.getDefault().toString());
+        dropBox = new DbxClient(config, accessToken);
+    }
    /**
     * Creates a new Main object.
     *
     * @param pString the type of user
     * @param pUsername - username of user
     */
-   Main(String pString, String pUsername)
+   Main(String pString, String pUsername) throws DbxException, IOException
    {
       mPathSep = System.getProperty("file.separator");
       username = pUsername;
       mUser = pString;
       mStage = new Stage();
+      Download mDown = new Download(dropBox);
+      
+      mDown.getFiles(username, dropBox);
       start(mStage);
       Login.mStage.close();
       Runtime.getRuntime().addShutdownHook(new Thread()
@@ -171,7 +187,7 @@ public final class Main
                {
                }
 
-               new Upload(Login.dropBox.mDBApi);
+               new Upload(dropBox);
                mStage.close();
                Platform.exit();
                System.exit(0);

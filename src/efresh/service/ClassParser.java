@@ -1,17 +1,12 @@
 package efresh.service;
 
-import org.icepdf.core.exceptions.*;
-import org.icepdf.core.pobjects.*;
-import org.icepdf.core.pobjects.graphics.text.*;
 import org.apache.pdfbox.pdmodel.*;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.image.*;
 import org.apache.pdfbox.pdmodel.graphics.xobject.*;
 import java.io.*;
 import java.io.IOException;
 
-import java.net.URL;
 
 import java.util.*;
 import java.util.ArrayList;

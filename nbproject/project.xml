@@ -15,6 +15,7 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>eFresh</name>
             <source-roots>
+                <root id="src.dropbox-java-sdk-1.7.6.dir"/>
                 <root id="src.dir"/>
             </source-roots>
             <test-roots>
