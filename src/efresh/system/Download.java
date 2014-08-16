@@ -30,13 +30,17 @@ public class Download
       //this.client = new DropboxClient(this.config
       FileOutputStream outputStream = new FileOutputStream("Login.info");
         try {
-              DbxEntry.File downloadedFile = mClient.getFile("Login.info", null,outputStream);
+              DbxEntry.File downloadedFile = mClient.getFile("/Login.info", null,outputStream);
             } 
         finally {
              outputStream.close();
             }
     
    }
+
+    public Download() {
+       
+    }
 
    /**
     * get the file to download
@@ -55,15 +59,9 @@ public class Download
          if(!folder.exists()){
              folder.mkdirs();
          }
-             
-       try {
-           outputStream = new FileOutputStream(folder);
-       } catch (FileNotFoundException ex) {
-           Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
-       }
-
+         System.out.println(pUserName);
          DbxEntry.WithChildren listing = mClient.getMetadataWithChildren("/" + pUserName + "/");
-          for (DbxEntry child : listing.children){
+         for (DbxEntry child : listing.children){
               mClient.getFile("/" + pUserName + "/" + child.name, null, new FileOutputStream(child.name));
           }
       

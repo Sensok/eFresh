@@ -86,6 +86,8 @@ public class Login
     * Instantiates the Info for the rest of the program to use
     */
    public static DbxClient dropBox;
+   
+   public Boolean isNew;
 
    /**
     * This will launch the GUI
@@ -249,7 +251,7 @@ public class Login
                   if (loginOkay)
                   {
                       try {
-                          new Main(userTextField.getText(), username);
+                          new Main(userTextField.getText(), username, isNew);
                       } catch (DbxException ex) {
                           Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                       } catch (IOException ex) {
@@ -279,6 +281,7 @@ public class Login
             public void handle(ActionEvent e)
             {
                CreateAccount acct = new CreateAccount();
+               isNew = true;
             }
          });
 
@@ -289,7 +292,8 @@ public class Login
 
     private void initDropbox() {
         String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
-        DbxRequestConfig config = new DbxRequestConfig("MiniPierre", Locale.getDefault().toString());
+        DbxRequestConfig config = new DbxRequestConfig("GERSII", Locale.getDefault().toString());
         dropBox = new DbxClient(config, accessToken);
+        isNew = false;
     }
 }

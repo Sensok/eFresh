@@ -154,7 +154,7 @@ public final class Main
 
     private void initDropbox() {
         String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
-        DbxRequestConfig config = new DbxRequestConfig("MiniPierre", Locale.getDefault().toString());
+        DbxRequestConfig config = new DbxRequestConfig("GERSII", Locale.getDefault().toString());
         dropBox = new DbxClient(config, accessToken);
     }
    /**
@@ -163,15 +163,16 @@ public final class Main
     * @param pString the type of user
     * @param pUsername - username of user
     */
-   Main(String pString, String pUsername) throws DbxException, IOException
+   Main(String pString, String pUsername, Boolean isNew) throws DbxException, IOException
    {
       mPathSep = System.getProperty("file.separator");
       username = pUsername;
       mUser = pString;
       mStage = new Stage();
-      Download mDown = new Download(dropBox);
-      
-      mDown.getFiles(username, dropBox);
+      Download mDown = new Download();
+      if(!isNew){     
+       //mDown.getFiles(username, dropBox);
+      }
       start(mStage);
       Login.mStage.close();
       Runtime.getRuntime().addShutdownHook(new Thread()
