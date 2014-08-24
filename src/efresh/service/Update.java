@@ -1,7 +1,10 @@
 package efresh.service;
 
 //TODO: Update the dropbox account with the new information
-//from the session
+
+import com.dropbox.core.DbxClient;
+
+//from the session i.e. files that have been removed/deleted
 
 /**
  *
@@ -9,4 +12,8 @@ package efresh.service;
  */
 public class Update
 {
+
+    public Update(DbxClient dropBox) {
+        
+    }
 }

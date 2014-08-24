@@ -3,9 +3,12 @@ package efresh.desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -447,7 +450,11 @@ public final class StudentInfo
     */
    public static void changeData(String[] data, File image)
    {
-      mImage = new Image(image.toString());
+          try {
+           mImage = new Image(image.toURI().toURL().toString());
+       } catch (MalformedURLException ex) {
+           Logger.getLogger(StudentInfo.class.getName()).log(Level.SEVERE, null, ex);
+       }
       mImageView.setImage(mImage);
 
       int j = 0;

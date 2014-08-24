@@ -26,6 +26,7 @@ public class ZipCSVPDF
       mPath = System.getProperty("user.home") + mPathSep +
          "efresh-tmp" + mPathSep + mName + mPathSep + mZipName + ".zip";
       zipFiles();
+     
    }
 
    private void zipFiles()

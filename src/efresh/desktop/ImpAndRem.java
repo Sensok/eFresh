@@ -1,7 +1,6 @@
 package efresh.desktop;
 
 import efresh.service.Alert;
-import efresh.service.PDFTextParser;
 import efresh.system.CopyFiles;
 
 import java.io.File;
@@ -222,11 +221,7 @@ public final class ImpAndRem
                       (selectedFile.getName().endsWith("zip")) ||
                       (selectedFile.getName().endsWith("pdf")))
                   {
-                     if (selectedFile.getName().endsWith("pdf"))
-                     {
-                        PDFTextParser mParse = new PDFTextParser(selectedFile.getAbsolutePath(), username, selectedFile.getName());
-                        selectedFile = mParse.getZipFile();
-                     }
+
                      mTextField.setText(selectedFile.getName());
                   }
                   else

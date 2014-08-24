@@ -5,6 +5,9 @@ import efresh.service.*;
 import efresh.system.*;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.collections.*;
 
@@ -289,7 +292,11 @@ public final class Random
    public void changeData(File image, String name)
    {
       imageFile = image;
-      mImage = new Image(image.toString());
+       try {
+           mImage = new Image(image.toURI().toURL().toString());
+       } catch (MalformedURLException ex) {
+           Logger.getLogger(Random.class.getName()).log(Level.SEVERE, null, ex);
+       }
       imageView.setImage(mImage);
       mNameLabel.setText(name);
    }

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
  */
 public class Download
 {
+
    /**
     * Creates a new Download object.
     *
@@ -39,7 +40,6 @@ public class Download
    }
 
     public Download() {
-       
     }
 
    /**
@@ -49,23 +49,39 @@ public class Download
     * @param query temp string
     * @param mDBApi the main dropbox api to use
     */
-   public void getFiles(String pUserName, DbxClient mClient) throws DbxException, IOException
+   public void getFiles(String pUserName, DbxClient mClient)
    {
       FileOutputStream outputStream = null;
       String mPathSep = System.getProperty("file.separator");
-      
+      String filePath = System.getProperty("user.home") + mPathSep +
+                     "efresh-tmp" + mPathSep + pUserName;
+      try{
          File folder = new File(System.getProperty("user.home") + mPathSep +
                      "efresh-tmp" + mPathSep + pUserName);
          if(!folder.exists()){
              folder.mkdirs();
          }
-         System.out.println(pUserName);
-         DbxEntry.WithChildren listing = mClient.getMetadataWithChildren("/" + pUserName + "/");
-         for (DbxEntry child : listing.children){
-              mClient.getFile("/" + pUserName + "/" + child.name, null, new FileOutputStream(child.name));
-          }
+         String path = "/" + pUserName;
+         System.out.println(path);
+         DbxEntry check = mClient.getMetadata(path);
+        if (check == null){
+             mClient.createFolder(path);
+         }
+        else{
+            DbxEntry.WithChildren listing = mClient.getMetadataWithChildren(path);
+            for (DbxEntry child : listing.children){
+                System.out.print(child.name);
+                mClient.getFile("/" + pUserName + "/" + child.name, null, new FileOutputStream(filePath + mPathSep + child.name));
+            }
+         }
       
-     
+      }
+      catch(DbxException e){
+          
+      }
+      catch(IOException e){
+          System.out.println(e);
+      }
    }
 
    /**

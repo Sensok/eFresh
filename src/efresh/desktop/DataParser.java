@@ -38,6 +38,7 @@ public class DataParser
     */
    private BufferedReader buff;
 
+   public static String mIncFileName;
    /**
     * Starts parsing the data
     * @param selectedFile current file to parse
@@ -46,18 +47,63 @@ public class DataParser
    public DataParser(File selectedFile, String pUserName)
       throws FileNotFoundException, IOException, Exception
    {
-      String newName = "";
 
+      File tempFile = selectedFile;
       CopyFiles mCopy = new CopyFiles(selectedFile, pUserName);
       selectedFile = mCopy.getNewFile();
+      mIncFileName= selectedFile.getName();
+      String checkName = mIncFileName.substring(0,mIncFileName.indexOf('.'));
 
       if (selectedFile.getName().endsWith("zip"))
       {
+         unzipFiles(selectedFile);
+      }
+
+      else if (selectedFile.getName().endsWith("pdf"))
+      {
+         File folder = new File(tempFile.getAbsolutePath().substring(0,tempFile.getAbsolutePath().lastIndexOf(System.getProperty("file.separator"))));
+         File[] files = folder.listFiles();
+         for (File temp : files)
+         {
+            if (temp.getName().contains(checkName) &&
+                !temp.getName().contains(selectedFile.getName().substring(selectedFile.getName().indexOf('.'), selectedFile.getName().length()))
+                && ! temp.getName().endsWith(".zip"))
+            {
+               mCSVFile =
+                  (temp.getName().endsWith("csv") ? temp : selectedFile);
+               mPDFFile =
+                  (temp.getName().endsWith("pdf") ? temp : selectedFile);
+               mCopy = new CopyFiles(mCSVFile, pUserName);
+               mCSVFile = mCopy.getNewFile();
+               ZipCSVPDF newFile = new ZipCSVPDF(mCSVFile,
+                                                   mPDFFile, pUserName);
+               File newZip = newFile.getZipFile();
+               addInfoToClass(parseCSVPDF(), newZip);
+               break;
+            }
+         }
+      }
+      else
+      {
+         parseCSV(selectedFile);
+      }
+   }
+
+   private void unzipFiles(File zip)
+   {
+      String newName = "";
+      File selectedFile = zip;
          // pass in the zip
          // extract the 2 files and send both those files to the ClassParser
-         newName = changeNameForPerson(selectedFile.getName(), "", selectedFile);
+      newName = changeNameForPerson
+         (selectedFile.getName(), "", selectedFile);
+         addInfoToClass(newName, selectedFile);
+   }
 
-
+   private void addInfoToClass(String newName, File selectedFile)
+   {
+      try
+      {
          if (Main.data.getFileMap().containsKey(newName))
          {
             Main.data.remove(newName);
@@ -80,28 +126,58 @@ public class DataParser
          }
       }
 
-      else
+      catch(IOException e)
       {
+         System.out.println("ERROR IN CREATE CLASS PARSER");
+      }
+    /*  try
+      {
+         Shell removeTemp = new Shell();
+         removeTemp.remove(mCSVFile);
+         removeTemp.remove(mPDFFile);
+         System.out.println(mPDFFile.getAbsolutePath());
+         System.out.println(mCSVFile.getAbsolutePath());
+      }
+      catch(IOException e)
+      {
+         System.out.println("ERROR CANT FIND FILE definitely here");
+      }*/
+   }
+
+
+   private void parseCSV(File selectedFile)
+   {
+      try
+      {
+         String newName = "";
          buff = new BufferedReader(new FileReader(selectedFile));
 
          String parseLine = buff.readLine();
          parseLine = buff.readLine();
          newName = changeNameForGame(parseLine);
-
-         if (Main.data.contains(newName))
+         if (!newName.contains("NameINumberEmail"))
          {
-            Main.data.remove(newName);
-            Main.data.addToGame(newName, new GameParser(selectedFile));
-         }
-         else
-         {
-            Main.data.addToGame(newName, new GameParser(selectedFile));
+
+            if (Main.data.contains(newName))
+            {
+               Main.data.remove(newName);
+               Main.data.addToGame(newName, new GameParser(selectedFile));
+            }
+            else
+            {
+               Main.data.addToGame(newName, new GameParser(selectedFile));
+            }
+
+            Main.data.addToMap(newName, selectedFile);
          }
 
-         Main.data.addToMap(newName, selectedFile);
       }
-   }
+      catch (IOException ie)
+      {
+         System.out.println("ERROR Parsing CSV");
+      }
 
+   }
    /**
     * This will change the String name to get ride of extra
     * characters
@@ -138,27 +214,35 @@ public class DataParser
       }
       else
       {
-         try
-         {
-            BufferedReader buff = new BufferedReader(new FileReader(mCSVFile));
-            parseLine = buff.readLine();
-         }
-         catch (Exception e)
-         {
-            System.out.println("ERROR" + parseLine);
-         }
-
-         if (parseLine.contains("Class"))
-         {
-            return parseLine.replaceAll("(^Class)|[,\"]", "");
-         }
-         else
-         {
-            return getSemester(mCSVFile.toString());
-         }
+         return parseCSVPDF();
       }
    }
+   private String parseCSVPDF()
+   {
+      String parseLine = "";
+      String fileName = mCSVFile.getName();
+      int index = fileName.indexOf('-') + 1;
+      String sectionNum = fileName.substring(index, index+2);
+      try
+      {
+         BufferedReader buff = new BufferedReader(new FileReader(mCSVFile));
+         parseLine = buff.readLine();
+      }
+      catch (Exception e)
+      {
+         System.out.println("ERROR" + parseLine);
+      }
 
+      if (parseLine.contains("Class"))
+      {
+         return parseLine.replaceAll("(^Class)|[,\"]", "") + "-" + sectionNum;
+      }
+      else
+      {
+         return getSemester(mCSVFile.getName()) + "-" + sectionNum;
+      }
+
+   }
    /**
     * This will get the current semester and turn it into a string
     * for renaming files.

@@ -22,7 +22,7 @@ public class Info
     */
    public Info()
    {
-      title = "GERSII";
+      title = "eFresh";
       passCode = "12345";
    }
 }

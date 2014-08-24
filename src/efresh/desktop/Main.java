@@ -4,14 +4,18 @@ import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import static efresh.desktop.Login.dropBox;
+import efresh.service.Update;
 import efresh.service.Upload;
 import efresh.system.Download;
 
 import efresh.system.Starter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -165,13 +169,16 @@ public final class Main
     */
    Main(String pString, String pUsername, Boolean isNew) throws DbxException, IOException
    {
+      initDropbox();
       mPathSep = System.getProperty("file.separator");
       username = pUsername;
       mUser = pString;
       mStage = new Stage();
       Download mDown = new Download();
       if(!isNew){     
-       //mDown.getFiles(username, dropBox);
+
+          System.out.println("Not new" + username);
+          mDown.getFiles(username, dropBox);
       }
       start(mStage);
       Login.mStage.close();
@@ -180,15 +187,12 @@ public final class Main
             @Override
             public void run()
             {
-               File dir =
-                  new File(System.getProperty("user.home") +
-                     mPathSep + "efresh-tmp" + mPathSep + "Login.info");
-
-               if (dir.exists())
-               {
-               }
-
-               new Upload(dropBox);
+                try {
+                    new Upload(dropBox);
+                    new Update(dropBox);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
                mStage.close();
                Platform.exit();
                System.exit(0);
@@ -250,7 +254,7 @@ public final class Main
     */
    private void setStage()
    {
-      mStage.setTitle("GERSII");
+      mStage.setTitle("eFresh");
       mRoot = new VBox();
       mScene = new Scene(mRoot, 900, 550, Color.WHITE);
 

@@ -1,12 +1,18 @@
 package efresh.service;
 
-import org.apache.pdfbox.pdmodel.*;
+import org.icepdf.core.exceptions.*;
+import org.icepdf.core.pobjects.*;
+import org.icepdf.core.pobjects.graphics.text.*;
+
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.*;
-import org.apache.pdfbox.pdmodel.graphics.xobject.*;
+import java.awt.Graphics2D;
+
 import java.io.*;
 import java.io.IOException;
 
+import java.net.URL;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -69,7 +75,7 @@ public class ClassParser
    /**
     * Document to parse
     */
-   private PDDocument mDocument;
+   private Document mDocument;
 
    /**
     * Creates a new ClassParser object.
@@ -88,7 +94,7 @@ public class ClassParser
       names = new ArrayList<String>();
       mapData = new HashMap<String, String[]>();
       mapImage = new HashMap<String, Image>();
-      mDocument = new PDDocument();
+      mDocument = new Document();
 
       if (mFile.getName().endsWith(".csv"))
       {
@@ -153,103 +159,59 @@ public class ClassParser
    {
       try
       {
-         //FileInputStream fileIn = new FileInputStream(mPDF);
-         mDocument = PDDocument.load(mPDF.toString());
+         FileInputStream fileIn = new FileInputStream(mPDF);
+         mDocument.setInputStream(fileIn, mPDF.toString());
       }
-      // catch (PDFException ex)
-      // {
-      //    System.out.println("Error parsing PDF document " + ex);
-      // }
-      // catch (PDFSecurityException ex)
-      // {
-      //    System.out.println("Error encryption not supported " + ex);
-      // }
+      catch (PDFException ex)
+      {
+         System.out.println("Error parsing PDF document " + ex);
+      }
+      catch (PDFSecurityException ex)
+      {
+         System.out.println("Error encryption not supported " + ex);
+      }
       catch (IOException ex)
       {
          System.out.println("Error handling PDF document " + ex);
       }
 
       // Get images
-      List pageTree = mDocument.getDocumentCatalog().getAllPages();
-      Iterator iter= pageTree.iterator();
-      int i = 0;
-      while(iter.hasNext())
-      {
-         Map mappy = null;
-         PDPage page = (PDPage)iter.next();
-         PDResources resources = page.getResources();
-         try
-         {
-             mappy = resources.getImages();
-         }
-         catch (IOException e)
-         {
-            System.out.println("ERROR IMAGES: " + e);
-         }
+      PageTree pageTree = mDocument.getCatalog().getPageTree();
+      int totalPages = mDocument.getNumberOfPages();
 
-         Map<String,PDXObjectImage> images = new TreeMap<String, PDXObjectImage>(mappy);
-
-         if( images != null )
-         {
-            for (Map.Entry<String, ?> entry: images.entrySet())
-            {
-               String key = "img" + i;
-               System.out.println("Key is " + key );
-               PDXObjectImage image = (PDXObjectImage)images.get( key );
-               BufferedImage temp = null;
-               try
-               {
-                  temp = image.getRGBImage();
-               }
-               catch (IOException e)
-               {
-                 System.out.println("ERROR RGB IMAGE: " + e);
-               }
-               if (temp != null)
-               {
-                  mImages.add(temp);
-                  i++;
-               }
-            }
-         }
-      }
-      try
+      for (int i = 0; i < totalPages; i++)
       {
-         mDocument.close();
-      }
-      catch(IOException e)
-      {
-         System.out.println("Error closing PDF document " + e);
+         extractImages(pageTree.getPage(i/*, mDocument*/));
       }
    }
 
+   /**
+    * Extracts images from a Page and adds them to the image list.
+    * @param pPage The page to extract images from.
+    */
+   private void extractImages(Page pPage)
+   {
+      Enumeration pageImages = new Vector(pPage.getImages()).elements();
 
-   // /**
-   //  * Extracts images from a Page and adds them to the image list.
-   //  * @param pPage The page to extract images from.
-   //  */
-   // private void extractImages(Page pPage)
-   // {
-   //    List<Image> pageImages = pPage.getImages();
+      while (pageImages.hasMoreElements())
+      {
+         BufferedImage image = toBufferedImage((Image)pageImages.nextElement());
 
-   //    for(Image temp : pageImages)
-   //    {
-   //       BufferedImage image = (BufferedImage) temp;
-
-   //       if (image != null)
-   //       {
-   //          mImages.add(image);
-   //       }
-   //    }
-   // }
+         if (image != null)
+         {
+            mImages.add(image);
+         }
+      }
+   }
 
    /**
-    * This will get ride of unwanted things int the string
+    * This will get ride of unwanted things in the string
     *
     * @param mString string to parse and add
     */
    private void convertData(String mString)
    {
+
       if (parseLine.charAt(0) == '\"')
       {
          parseLine = parseLine.substring(1, parseLine.length());
@@ -336,4 +298,61 @@ public class ClassParser
 
       return outputFile;
    }
+
+   public void changePersonImage(String pNmae, File pImage)
+   {
+      try
+      {
+         BufferedImage temp = ImageIO.read(pImage);
+         mapImage.put(pNmae,temp);
+      }
+      catch (IOException e)
+      {
+         System.out.println("ERROR:NO FILE");
+      }
+
+   }
+
+   public Collection<String[]> getDataMap()
+   {
+      Map <String, String[]> temp
+         = new TreeMap<String, String[]>(mapData);
+      return temp.values();
+   }
+
+   public Collection<Image> getImageMap()
+   {
+      Map <String, Image> temp = new TreeMap<String, Image>(mapImage);
+
+      return temp.values();
+   }
+
+   public void addData(String pName, String[] pData)
+   {
+      mapData.put(pName, pData);
+   }
+   /**
+    * Converts a given Image into a BufferedImage
+    *
+    * @param img The Image to be converted
+    * @return The converted BufferedImage
+    */
+   public static BufferedImage toBufferedImage(Image img)
+   {
+      if (img instanceof BufferedImage)
+      {
+         return (BufferedImage) img;
+      }
+      // Create a buffered image with transparency
+      BufferedImage bimage =
+         new BufferedImage(img.getWidth(null),
+                           img.getHeight(null),
+                           BufferedImage.TYPE_INT_ARGB);
+      // Draw the image on to the buffered image
+      Graphics2D bGr = bimage.createGraphics();
+      bGr.drawImage(img, 0, 0, null);
+      bGr.dispose();
+      // Return the buffered image
+      return bimage;
+    }
 }

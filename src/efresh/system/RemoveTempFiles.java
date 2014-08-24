@@ -26,10 +26,8 @@ public class RemoveTempFiles
     *   @param pSource - the source file
     *   @param pName - the users encrypted user name
     */
-   public RemoveTempFiles(File pSource, String pName)
+   public RemoveTempFiles(File pSource)
    {
-      String files;
-
       try
       {
          Shell mShell = new Shell();

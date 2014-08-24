@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
@@ -26,7 +27,7 @@ public class Upload
     *
     * @param mDBApi Dropbox api to use to upload files to dropbox
     */
-   public Upload(DbxClient mClient)
+   public Upload(DbxClient mClient) throws FileNotFoundException
    {
       mPathSep = System.getProperty("file.separator");
       InputStream is;
@@ -38,9 +39,9 @@ public class Upload
       File folder = new File(path);      
       
       InputStream inputStream;
-       inputStream = new ByteArrayInputStream(path.getBytes());
+       inputStream = new FileInputStream(path);
         try { 
-              DbxEntry.File uploadedFile = mClient.uploadFile("",
+              DbxEntry.File uploadedFile = mClient.uploadFile("/Login.info",
               DbxWriteMode.force(), folder.length(), inputStream);
               System.out.println("Uploaded: " + uploadedFile.toString());
               inputStream.close();

@@ -12,6 +12,7 @@ import efresh.system.Starter;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -114,7 +115,11 @@ public class Login
          {
             public void handle(WindowEvent event)
             {
-               new Upload(dropBox);
+                try {
+                    new Upload(dropBox);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                }
                event.consume();
 
                try
@@ -156,7 +161,7 @@ public class Login
          System.out.println("Error " + e);
       }
 
-      primaryStage.setTitle("GERSII Login Screen");
+      primaryStage.setTitle("eFresh Login Screen");
 
       GridPane grid = new GridPane();
       grid.setAlignment(Pos.CENTER);
@@ -164,7 +169,7 @@ public class Login
       grid.setVgap(10);
       grid.setPadding(new Insets(25, 25, 25, 25));
 
-      Text scenetitle = new Text("  GERSII");
+      Text scenetitle = new Text("  eFresh");
       scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
       grid.add(scenetitle, 0, 0, 2, 1);
 
@@ -292,7 +297,7 @@ public class Login
 
     private void initDropbox() {
         String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
-        DbxRequestConfig config = new DbxRequestConfig("GERSII", Locale.getDefault().toString());
+        DbxRequestConfig config = new DbxRequestConfig("eFresh", Locale.getDefault().toString());
         dropBox = new DbxClient(config, accessToken);
         isNew = false;
     }
