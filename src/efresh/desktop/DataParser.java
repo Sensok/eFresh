@@ -49,8 +49,11 @@ public class DataParser
    {
 
       File tempFile = selectedFile;
-      CopyFiles mCopy = new CopyFiles(selectedFile, pUserName);
-      selectedFile = mCopy.getNewFile();
+      
+      if(tempFile.toString().endsWith(".csv")){
+        CopyFiles mCopy = new CopyFiles(selectedFile, pUserName);
+        selectedFile = mCopy.getNewFile();
+      }
       mIncFileName= selectedFile.getName();
       String checkName = mIncFileName.substring(0,mIncFileName.indexOf('.'));
 
@@ -73,8 +76,8 @@ public class DataParser
                   (temp.getName().endsWith("csv") ? temp : selectedFile);
                mPDFFile =
                   (temp.getName().endsWith("pdf") ? temp : selectedFile);
-               mCopy = new CopyFiles(mCSVFile, pUserName);
-               mCSVFile = mCopy.getNewFile();
+               //mCopy = new CopyFiles(mCSVFile, pUserName);
+               //mCSVFile = mCopy.getNewFile();
                ZipCSVPDF newFile = new ZipCSVPDF(mCSVFile,
                                                    mPDFFile, pUserName);
                File newZip = newFile.getZipFile();
@@ -130,18 +133,6 @@ public class DataParser
       {
          System.out.println("ERROR IN CREATE CLASS PARSER");
       }
-    /*  try
-      {
-         Shell removeTemp = new Shell();
-         removeTemp.remove(mCSVFile);
-         removeTemp.remove(mPDFFile);
-         System.out.println(mPDFFile.getAbsolutePath());
-         System.out.println(mCSVFile.getAbsolutePath());
-      }
-      catch(IOException e)
-      {
-         System.out.println("ERROR CANT FIND FILE definitely here");
-      }*/
    }
 
 

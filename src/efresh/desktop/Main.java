@@ -7,12 +7,15 @@ import static efresh.desktop.Login.dropBox;
 import efresh.service.Update;
 import efresh.service.Upload;
 import efresh.system.Download;
+import efresh.system.RemoveTempFiles;
 
 import efresh.system.Starter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,7 +158,11 @@ public final class Main
     * DropBox API
     */
    public static DbxClient dropBox;
-
+   /**
+    * List of deleted files
+    */
+   public static List deletedFiles;
+   
     private void initDropbox() {
         String accessToken = new String("CH7MRSYzE7MAAAAAAAAAB31ANHyUmV2hPR5_xKu84yU0I_jM4C1KTTxx3m00aqJv");
         DbxRequestConfig config = new DbxRequestConfig("GERSII", Locale.getDefault().toString());
@@ -170,6 +177,7 @@ public final class Main
    Main(String pString, String pUsername, Boolean isNew) throws DbxException, IOException
    {
       initDropbox();
+      deletedFiles = new ArrayList <File>();
       mPathSep = System.getProperty("file.separator");
       username = pUsername;
       mUser = pString;
@@ -189,12 +197,14 @@ public final class Main
             {
                 try {
                     new Upload(dropBox);
-                    new Update(dropBox);
+                    new Update(dropBox,username,deletedFiles);
+                    new RemoveTempFiles(username);
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
                mStage.close();
                Platform.exit();
+             
                System.exit(0);
             }
          });

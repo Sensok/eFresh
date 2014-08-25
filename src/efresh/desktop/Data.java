@@ -116,6 +116,7 @@ public class Data
       StudentInfo.removeClass(value);
       studentList.remove(value);
       personMap.remove(pName);
+      Main.deletedFiles.add(fileMap.get(pName));
       new RemoveTempFiles((File)fileMap.get(pName));
       fileMap.remove(pName);
 

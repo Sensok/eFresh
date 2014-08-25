@@ -1,15 +1,10 @@
 package efresh.service;
 
 import com.dropbox.core.*;
-import java.io.ByteArrayInputStream;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-
-import java.util.Scanner;
 
 //TODO: Jordan - make sure that all the files get back into dropbox
 /**

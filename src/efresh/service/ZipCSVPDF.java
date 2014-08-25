@@ -25,8 +25,11 @@ public class ZipCSVPDF
          substring(0,mPDF.getName().indexOf('.'));
       mPath = System.getProperty("user.home") + mPathSep +
          "efresh-tmp" + mPathSep + mName + mPathSep + mZipName + ".zip";
-      zipFiles();
      
+      System.out.println(mPDF.getAbsolutePath());
+      System.out.println(mCSV.getAbsolutePath());
+      zipFiles();
+      
    }
 
    private void zipFiles()
@@ -72,17 +75,6 @@ public class ZipCSVPDF
       {
          System.out.println("Failed to create zip");
       }
-      // try
-      // {
-      //    // Shell temp = new Shell();
-      //    // temp.remove(mCSV);
-      //    // temp.remove(mPDF);
-      // }
-      // catch (IOException e)
-      // {
-      //    System.out.println("No File to remove");
-      // }
-
    }
    /**
     * This will zip the csv and pdf files together

@@ -1,6 +1,7 @@
 package efresh.system;
 
 import java.io.File;
+import java.nio.file.Files;
 
 /**
  * Will remove temp files when the data is removed from the program
@@ -39,4 +40,22 @@ public class RemoveTempFiles
          System.out.println("ERROR REMOVE");
       }
    }
+   
+    public RemoveTempFiles(String pUserName) {
+      String mPathSep = System.getProperty("file.separator");
+      String filePath = System.getProperty("user.home") + mPathSep +
+                     "efresh-tmp" + mPathSep + pUserName;
+      try{
+          Shell mShell = new Shell();
+          File folder = new File(filePath);
+          File[] listFiles = folder.listFiles();
+          for (File file : listFiles){
+              System.out.println(file.getAbsolutePath());
+              Files.delete(file.toPath());
+          }
+      }
+      catch(Exception e){
+          e.printStackTrace();
+      }
+    }
 }
