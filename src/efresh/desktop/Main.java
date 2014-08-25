@@ -184,8 +184,6 @@ public final class Main
       mStage = new Stage();
       Download mDown = new Download();
       if(!isNew){     
-
-          System.out.println("Not new" + username);
           mDown.getFiles(username, dropBox);
       }
       start(mStage);

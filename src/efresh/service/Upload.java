@@ -38,7 +38,6 @@ public class Upload
         try { 
               DbxEntry.File uploadedFile = mClient.uploadFile("/Login.info",
               DbxWriteMode.force(), folder.length(), inputStream);
-              System.out.println("Uploaded: " + uploadedFile.toString());
               inputStream.close();
             }
         

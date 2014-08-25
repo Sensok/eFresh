@@ -50,7 +50,7 @@ public class DataParser
 
       File tempFile = selectedFile;
       
-      if(tempFile.toString().endsWith(".csv")){
+      if(!tempFile.toString().endsWith(".pdf")){
         CopyFiles mCopy = new CopyFiles(selectedFile, pUserName);
         selectedFile = mCopy.getNewFile();
       }
